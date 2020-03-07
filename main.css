@@ -15,4 +15,9 @@
     width: 100%;
     height: auto;
   }
+  .col-md-6 {
+    padding: 5%;
+  }
+
 }
+

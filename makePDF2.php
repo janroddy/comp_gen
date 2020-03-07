@@ -1,6 +1,9 @@
 <?php
-require('fpdf/fpdf.php');
 
+// Load Composer's autoloader
+require 'vendor/autoload.php';
+
+$mpdf = new \Mpdf\Mpdf(['tempDir' => sys_get_temp_dir().DIRECTORY_SEPARATOR.'mpdf']);
 
 $imgs = array(
   "img/shark.jpg", 
@@ -20,11 +23,11 @@ $comps = array(
   "your cousins refer to you as the cool cousin.", 
   "your prom date still thinks about you.",
    "I bet you make babies smile.", 
-   "you are more fun than bubble wrap.",
-   "you are the person everyone wants on their team.",
+   "you’re more fun than bubble wrap.",
+   "you’re the person everyone wants on their team.",
    "you embody all the best qualities of each Hogwarts house, rolled into one.",
-   "you are strong.  Never change that about you.",
-   "you are savvy problem-solver.",
+   "you're strong.  Never change that about you.",
+   "you're a sa vvy problem-solver.",
    "is there anything you CAN’T do?",
    "If you were cloned, you'd be the better looking one."
  );
@@ -37,7 +40,6 @@ $jacobComps = array (
 "You're a great partner"
 );
 
-
 $randomNumImg = rand(0,9);
 $randomNumbComp = rand(0,9);
 $randJacob = rand(0,4);
@@ -46,23 +48,39 @@ $randJacob = rand(0,4);
 $fname = $_POST['fname'];
 $lname = $_POST['lname'];
 
-$compliment =  $fname .', '. $comps[$randomNumbComp];
+$compliment = '<h2>' . $fname .', '. $comps[$randomNumbComp] .'</h2';
 
-$jacobComp = $fname .', '. $jacobComps[$randJacob];
-
-
-$pdf = new FPDF();
-$pdf->AddPage();
-
-$pdf->SetFont('Arial','B',16);
-$pdf->Image($imgs[$randomNumImg],10,10,-300);
-$pdf->SetXY(50, 100);
+$jacobComp = '<h2>' . $fname .', '. $jacobComps[$randJacob] .'</h2';
 
 
-$pdf->SetY(-5);
-      // Arial italic 8
-$pdf->SetFont('Arial','B',16);
-      // Page number
-$pdf->Cell(20, 20,$compliment);
-$pdf->Output();
+
+//create new instance of Mdpf class
+$mpdf = new \Mpdf\Mpdf();
+
+$data = '';
+
+
+if ($fname == "Jacob" and $lname = "Foster") {
+  $data .= $jacobComp;
+}
+else {
+  $data .= $compliment;
+}
+
+      
+ 
+
+
+
+$mpdf->imageVars['myvariable'] = file_get_contents($imgs[$randomNumImg]);
+$img_html = '<img text-align="center" src="var:myvariable" />';
+$mpdf->WriteHTML($img_html);
+
+// Write PDF
+$mpdf->WriteHTML($data);
+
+// Output to browser
+$mpdf->Output();
+
+
 ?>
